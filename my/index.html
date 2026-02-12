@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>my.ea.systems</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: black;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        .login-screen, .dashboard {
+            text-align: center;
+        }
+        .login-screen h1 {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        .login-screen input {
+            padding: 1rem;
+            font-size: 1rem;
+            border: 1px solid #333;
+            background: #111;
+            color: white;
+            border-radius: 4px;
+            width: 300px;
+            text-align: center;
+        }
+        .login-screen input::placeholder {
+            color: #666;
+        }
+        .login-screen input:focus {
+            outline: none;
+            border-color: #fff;
+        }
+        .login-screen button {
+            display: block;
+            margin: 1rem auto 0;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-screen button:hover {
+            background: #ddd;
+        }
+        .dashboard {
+            display: none;
+        }
+        .dashboard h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .dashboard .domain {
+            color: #888;
+            margin-bottom: 2rem;
+        }
+        .dashboard .logout {
+            color: #666;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .dashboard .logout:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-screen" id="login">
+        <h1>my.ea.systems</h1>
+        <form id="loginForm">
+            <input type="password" id="domainInput" placeholder="Enter your domain" required>
+            <button type="submit">Enter</button>
+        </form>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <h1>Welcome</h1>
+        <p class="domain" id="domainDisplay"></p>
+        <p class="logout" id="logout">logout</p>
+    </div>
+
+    <script>
+        const loginScreen = document.getElementById('login');
+        const dashboard = document.getElementById('dashboard');
+        const domainInput = document.getElementById('domainInput');
+        const domainDisplay = document.getElementById('domainDisplay');
+        const loginForm = document.getElementById('loginForm');
+        const logoutBtn = document.getElementById('logout');
+
+        // Check if already "logged in"
+        const savedDomain = localStorage.getItem('ea_domain');
+        if (savedDomain) {
+            showDashboard(savedDomain);
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const domain = domainInput.value.trim();
+            if (domain) {
+                localStorage.setItem('ea_domain', domain);
+                showDashboard(domain);
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('ea_domain');
+            loginScreen.style.display = 'block';
+            dashboard.style.display = 'none';
+            domainInput.value = '';
+        });
+
+        function showDashboard(domain) {
+            loginScreen.style.display = 'none';
+            dashboard.style.display = 'block';
+            domainDisplay.textContent = domain;
+        }
+    </script>
+</body>
+</html>

@@ -21,20 +21,24 @@
         }
         .login-screen, .dashboard {
             text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
         }
         .login-screen h1 {
             margin-bottom: 2rem;
             font-size: 2rem;
         }
         .login-screen input {
+            display: block;
+            width: 100%;
             padding: 1rem;
             font-size: 1rem;
             border: 1px solid #333;
             background: #111;
             color: white;
             border-radius: 4px;
-            width: 300px;
-            text-align: center;
+            margin-bottom: 1rem;
         }
         .login-screen input::placeholder {
             color: #666;
@@ -44,8 +48,7 @@
             border-color: #fff;
         }
         .login-screen button {
-            display: block;
-            margin: 1rem auto 0;
+            width: 100%;
             padding: 1rem 2rem;
             font-size: 1rem;
             background: white;
@@ -57,23 +60,64 @@
         .login-screen button:hover {
             background: #ddd;
         }
+        .login-screen button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .error {
+            color: #ff6b6b;
+            margin-bottom: 1rem;
+            display: none;
+        }
         .dashboard {
             display: none;
+            max-width: 600px;
         }
         .dashboard h1 {
             font-size: 2rem;
             margin-bottom: 0.5rem;
         }
-        .dashboard .domain {
+        .dashboard .user-info {
             color: #888;
             margin-bottom: 2rem;
         }
-        .dashboard .logout {
+        .systems-list {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        .systems-list h2 {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .system-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .system-card:hover {
+            border-color: #666;
+        }
+        .system-card h3 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+        .system-card p {
+            font-size: 0.875rem;
+            color: #888;
+        }
+        .logout {
             color: #666;
             cursor: pointer;
             text-decoration: underline;
         }
-        .dashboard .logout:hover {
+        .logout:hover {
             color: white;
         }
     </style>
@@ -82,51 +126,113 @@
     <div class="login-screen" id="login">
         <h1>my.ea.systems</h1>
         <form id="loginForm">
-            <input type="password" id="domainInput" placeholder="Enter your domain" required>
-            <button type="submit">Enter</button>
+            <input type="email" id="emailInput" placeholder="Email" required>
+            <input type="password" id="passwordInput" placeholder="Password" required>
+            <p class="error" id="error"></p>
+            <button type="submit" id="submitBtn">Login</button>
         </form>
     </div>
 
     <div class="dashboard" id="dashboard">
-        <h1>Welcome</h1>
-        <p class="domain" id="domainDisplay"></p>
+        <h1>Welcome, <span id="userName"></span></h1>
+        <p class="user-info" id="userEmail"></p>
+
+        <div class="systems-list">
+            <h2>Your Systems</h2>
+            <div id="systemsContainer"></div>
+        </div>
+
         <p class="logout" id="logout">logout</p>
     </div>
 
     <script>
+        const API_BASE = 'https://api.serviceengine.xyz';
+
         const loginScreen = document.getElementById('login');
         const dashboard = document.getElementById('dashboard');
-        const domainInput = document.getElementById('domainInput');
-        const domainDisplay = document.getElementById('domainDisplay');
         const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorEl = document.getElementById('error');
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
+        const systemsContainer = document.getElementById('systemsContainer');
         const logoutBtn = document.getElementById('logout');
 
-        // Check if already "logged in"
-        const savedDomain = localStorage.getItem('ea_domain');
-        if (savedDomain) {
-            showDashboard(savedDomain);
+        // Check if already logged in
+        const savedUser = localStorage.getItem('ea_user');
+        if (savedUser) {
+            showDashboard(JSON.parse(savedUser));
         }
 
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const domain = domainInput.value.trim();
-            if (domain) {
-                localStorage.setItem('ea_domain', domain);
-                showDashboard(domain);
+            errorEl.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Logging in...';
+
+            try {
+                const response = await fetch(`${API_BASE}/public/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: emailInput.value.trim(),
+                        password: passwordInput.value
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Invalid credentials');
+                }
+
+                const userData = await response.json();
+                localStorage.setItem('ea_user', JSON.stringify(userData));
+                showDashboard(userData);
+            } catch (err) {
+                errorEl.textContent = err.message || 'Login failed';
+                errorEl.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Login';
             }
         });
 
         logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('ea_domain');
+            localStorage.removeItem('ea_user');
             loginScreen.style.display = 'block';
             dashboard.style.display = 'none';
-            domainInput.value = '';
+            emailInput.value = '';
+            passwordInput.value = '';
         });
 
-        function showDashboard(domain) {
+        function showDashboard(user) {
             loginScreen.style.display = 'none';
             dashboard.style.display = 'block';
-            domainDisplay.textContent = domain;
+
+            userName.textContent = user.name || 'User';
+            userEmail.textContent = user.email;
+
+            systemsContainer.innerHTML = '';
+            if (user.systems && user.systems.length > 0) {
+                user.systems.forEach(system => {
+                    const card = document.createElement('div');
+                    card.className = 'system-card';
+                    card.innerHTML = `
+                        <h3>${system.name}</h3>
+                        <p>${system.description || ''}</p>
+                    `;
+                    card.addEventListener('click', () => {
+                        // Future: navigate to system
+                        console.log('Selected system:', system.slug);
+                    });
+                    systemsContainer.appendChild(card);
+                });
+            } else {
+                systemsContainer.innerHTML = '<p style="color: #666;">No systems available</p>';
+            }
         }
     </script>
 </body>

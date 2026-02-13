@@ -10,6 +10,7 @@ interface System {
   name: string;
   slug: string;
   description?: string;
+  modal_url?: string;
 }
 
 interface User {
@@ -69,8 +70,10 @@ export default function Dashboard() {
     setPassword("");
   };
 
-  const handleSystemClick = (slug: string) => {
-    router.push(`/chat/${slug}`);
+  const handleSystemClick = (system: System) => {
+    // Store selected system data for the chat page
+    localStorage.setItem("ea_current_system", JSON.stringify(system));
+    router.push(`/chat/${system.slug}`);
   };
 
   if (isLoading) {
@@ -200,7 +203,7 @@ export default function Dashboard() {
           {user.systems.map((system) => (
             <div
               key={system.id}
-              onClick={() => handleSystemClick(system.slug)}
+              onClick={() => handleSystemClick(system)}
               className="bg-neutral-900 border border-neutral-800 rounded-lg p-5 cursor-pointer hover:border-neutral-700 hover:bg-neutral-800/50 transition-colors"
             >
               <h3 className="font-medium mb-1">{system.name}</h3>

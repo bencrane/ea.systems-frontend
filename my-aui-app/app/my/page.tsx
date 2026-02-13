@@ -123,7 +123,10 @@ export default function Dashboard() {
     <div className="min-h-screen bg-black text-white">
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0a0a0a] border-r border-neutral-900 flex flex-col p-4">
-        <div className="flex items-center gap-3 p-2 mb-4">
+        <div
+          onClick={handleLogout}
+          className="flex items-center gap-3 p-2 mb-4 cursor-pointer hover:opacity-80"
+        >
           <div className="w-8 h-8 bg-white text-black rounded flex items-center justify-center font-semibold">
             E
           </div>

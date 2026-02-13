@@ -147,6 +147,7 @@
 
     <script>
         const API_BASE = 'https://api.serviceengine.xyz';
+        const CHAT_URL = '/chat'; // Update this for production
 
         const loginScreen = document.getElementById('login');
         const dashboard = document.getElementById('dashboard');
@@ -225,8 +226,11 @@
                         <p>${system.description || ''}</p>
                     `;
                     card.addEventListener('click', () => {
-                        // Future: navigate to system
-                        console.log('Selected system:', system.slug);
+                        const params = new URLSearchParams({
+                            system: system.name,
+                            slug: system.slug
+                        });
+                        window.location.href = `${CHAT_URL}?${params.toString()}`;
                     });
                     systemsContainer.appendChild(card);
                 });

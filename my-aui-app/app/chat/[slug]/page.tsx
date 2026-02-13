@@ -150,7 +150,7 @@ export default function ChatPage() {
     return (
       <div className="flex h-dvh w-full flex-col bg-black text-white">
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 px-4">
-          <a href="/my/" className="text-neutral-500 hover:text-white transition-colors">
+          <a href="/my" className="text-neutral-500 hover:text-white transition-colors">
             &larr; Back
           </a>
           <h1 className="text-lg font-medium">{formatSlugAsTitle(slug)}</h1>
@@ -168,7 +168,7 @@ export default function ChatPage() {
                 </div>
                 <h2 className="text-xl font-semibold mb-2">Success!</h2>
                 <p className="text-neutral-400 mb-6">Your request has been submitted.</p>
-                <a href="/my/" className="inline-block px-6 py-2 bg-white text-black rounded hover:bg-neutral-200">
+                <a href="/my" className="inline-block px-6 py-2 bg-white text-black rounded hover:bg-neutral-200">
                   Back to Dashboard
                 </a>
               </div>
@@ -223,7 +223,7 @@ export default function ChatPage() {
   return (
     <div className="flex h-dvh w-full flex-col bg-black text-white">
       <header className="flex h-14 shrink-0 items-center justify-between border-b border-neutral-800 px-4">
-        <a href="/my/" className="text-neutral-500 hover:text-white transition-colors">
+        <a href="/my" className="text-neutral-500 hover:text-white transition-colors">
           &larr; Back
         </a>
         <h1 className="text-lg font-medium">{formatSlugAsTitle(slug)}</h1>

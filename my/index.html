@@ -303,7 +303,6 @@
 
     <script>
         const API_BASE = 'https://api.serviceengine.xyz';
-        const CHAT_URL = '/chat';
 
         const loginScreen = document.getElementById('login');
         const appLayout = document.getElementById('appLayout');
@@ -391,11 +390,7 @@
                         <p>${system.description || ''}</p>
                     `;
                     card.addEventListener('click', () => {
-                        const params = new URLSearchParams({
-                            system: system.name,
-                            slug: system.slug
-                        });
-                        window.location.href = `${CHAT_URL}?${params.toString()}`;
+                        window.location.href = `/chat/${system.slug}`;
                     });
                     systemsContainer.appendChild(card);
                 });
